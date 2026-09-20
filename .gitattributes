@@ -1,0 +1,11 @@
+# 行尾统一：仓库与工作区都存 LF。
+# Windows 上 git 默认 core.autocrlf=true，会在每次 add 时刷一屏 "LF will be replaced by CRLF"
+# 警告，而且 CRLF/LF 混进来会让 diff 出现「整个文件被重写」的假象。
+* text=auto eol=lf
+
+# 二进制，不做任何行尾处理
+*.png binary
+*.ico binary
+*.mp3 binary
+*.zip binary
+*.exe binary

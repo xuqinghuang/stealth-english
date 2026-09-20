@@ -1,0 +1,41 @@
+[package]
+name = "stealth-english"
+version = "0.1.0"
+description = "Stealth English-learning widget disguised as a work notification"
+authors = ["xuqinghuang"]
+license = "MIT"
+repository = "https://github.com/xuqinghuang/stealth-english"
+edition = "2021"
+rust-version = "1.77.2"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[lib]
+name = "app_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2.6.3", features = [] }
+
+[dependencies]
+serde_json = "1.0"
+serde = { version = "1.0", features = ["derive"] }
+log = "0.4"
+tauri = { version = "2.11.3", features = ["tray-icon", "image-png"] }
+tauri-plugin-log = "2"
+tauri-plugin-dialog = "2"
+tauri-plugin-global-shortcut = "2"
+tauri-plugin-autostart = "2"
+encoding_rs = "0.8"
+sha2 = "0.10"
+base64 = "0.22"
+# 神经语音走微软 Edge 的免费朗读端点，是 WebSocket + Sec-MS-GEC 鉴权
+# native-tls：Windows 上走 schannel，不需要额外装 OpenSSL
+tungstenite = { version = "0.26", features = ["native-tls"] }
+# 查词走有道 jsonapi（非官方接口，见 dict.rs）。
+# default-features=false 是为了关掉 reqwest 默认自带的 rustls，
+# 复用上面已经引入的 native-tls，免得为一个 GET 请求多编译一整套 TLS 栈
+reqwest = { version = "0.12", default-features = false, features = ["json", "native-tls"] }
+
+[target.'cfg(not(any(target_os = "android", target_os = "ios")))'.dependencies]
+tauri-plugin-single-instance = "2"

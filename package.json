@@ -1,0 +1,17 @@
+{
+  "name": "stealth-english",
+  "version": "0.1.0",
+  "description": "办公室隐身英语句子练习工具",
+  "license": "MIT",
+  "scripts": {
+    "web": "node tools/sync-web.js",
+    "dev": "node tools/sync-web.js && tauri dev",
+    "tauri": "tauri",
+    "test": "node core/test.js",
+    "icon": "node tools/gen-icon.js",
+    "pack": "node tools/pack.js"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^2.11.4"
+  }
+}

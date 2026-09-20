@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self'">
+<title>英语悄悄学 · 资料库</title>
+<link rel="icon" href="data:,">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html, body { height:100%; }
+  body { font-family:"Segoe UI","Microsoft YaHei",sans-serif; background:#191c22; color:#d7dde5; overflow:hidden; }
+
+  .m-tabs { display:flex; gap:4px; padding:10px 16px 0; background:#1f232b; border-bottom:1px solid rgba(255,255,255,.07); }
+  .m-tabs button {
+    padding:9px 18px; font-size:13.5px; background:none; border:none; color:#8b93a0;
+    cursor:pointer; border-radius:8px 8px 0 0; border-bottom:2px solid transparent;
+  }
+  .m-tabs button:hover { color:#d7dde5; }
+  .m-tabs button.active { color:#fff; border-bottom-color:#4f8cff; }
+  .m-body { height:calc(100% - 49px); overflow:auto; padding:22px 26px; }
+  .m-body::-webkit-scrollbar { width:8px; }
+  .m-body::-webkit-scrollbar-thumb { background:rgba(255,255,255,.14); border-radius:4px; }
+
+  .tab { display:none; }
+  .tab.active { display:block; }
+
+  .btn { padding:8px 16px; border-radius:7px; border:1px solid rgba(255,255,255,.1); background:#242830; color:#d7dde5; cursor:pointer; font-size:13px; }
+  .btn:hover { border-color:rgba(255,255,255,.3); }
+  .btn.primary { background:#3b82f6; border-color:#3b82f6; color:#fff; }
+  .btn.primary:hover { background:#2f6fe0; }
+  .btn.danger:hover { border-color:#e0344a; color:#ff7b8a; }
+  .btn.mini { padding:4px 10px; font-size:12px; }
+
+  /* 资料库 */
+  .lib-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; }
+  .lib-head h3 { font-size:16px; color:#fff; }
+  .lib-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  .bcard { display:flex; gap:12px; padding:14px; background:#21252d; border-radius:10px; border:1px solid rgba(255,255,255,.06); transition:border-color .15s; }
+  .bcard:hover { border-color:rgba(79,140,255,.5); }
+  .bc-cover { width:52px; height:66px; border-radius:6px; flex:none; display:flex; align-items:center; justify-content:center; font-size:15px; font-weight:700; color:#fff; text-shadow:0 1px 3px rgba(0,0,0,.35); }
+  .bc-info { flex:1; display:flex; flex-direction:column; gap:4px; min-width:0; }
+  .bc-title { font-size:13.5px; color:#eef2f7; display:flex; align-items:center; gap:6px; }
+  .bc-title b { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .bc-info > span { font-size:11.5px; color:#8b93a0; }
+  .bc-bar { height:4px; background:#2b3038; border-radius:2px; overflow:hidden; margin-top:3px; }
+  .bc-bar i { display:block; height:100%; background:#4f8cff; border-radius:2px; }
+  .bc-ops { display:flex; gap:6px; margin-top:6px; }
+  .bcard.add { border:1.5px dashed rgba(255,255,255,.18); background:none; align-items:center; justify-content:center; color:#8b93a0; font-size:13px; flex-direction:column; gap:6px; cursor:pointer; }
+  .bcard.add:hover { border-color:#4f8cff; color:#9dc2ff; }
+  .bcard.add .plus { font-size:26px; }
+  .empty-tip { color:#6b7480; font-size:13px; padding:30px 0; text-align:center; grid-column:1/-1; }
+
+  /* 导入 */
+  .i-step { margin-bottom:22px; }
+  .i-cap { display:block; font-size:13px; font-weight:600; color:#dfe5ec; margin-bottom:10px; }
+  .i-btns { display:flex; gap:8px; }
+  .i-btns button { flex:1; padding:14px 10px; background:#21252d; border:1px solid rgba(255,255,255,.08); border-radius:9px; color:#c8cfd8; font-size:13px; cursor:pointer; }
+  .i-btns button:hover { border-color:#4f8cff; color:#fff; }
+  .i-btns .em { display:block; font-size:20px; margin-bottom:6px; }
+  .i-file-name { font-size:12px; color:#7fd18c; margin-top:8px; }
+  .i-row2 { display:grid; grid-template-columns:1fr 1fr; gap:0 16px; }
+  .i-radios, .unit-sel { background:#1c1f26; border:1px solid rgba(255,255,255,.06); border-radius:10px; padding:13px 14px 4px; }
+  .i-radios label, .unit-sel label {
+    display:flex; align-items:flex-start; gap:8px; font-size:12.5px; color:#aeb6c0;
+    line-height:1.5; padding-bottom:10px; cursor:pointer;
+  }
+  .i-radios label:hover, .unit-sel label:hover { color:#dfe5ec; }
+  .i-radios label span, .unit-sel label span { flex:1; }
+  .i-radios input:checked + span, .unit-sel input:checked + span { color:#eef3f9; }
+  .i-radios input, .unit-sel input, .chip input { accent-color:#3b82f6; }
+  .i-radios input, .unit-sel input { flex:none; margin-top:2px; }
+  select, input[type=number], input[type=text] {
+    background:#242830; color:#d7dde5; border:1px solid rgba(255,255,255,.1); border-radius:6px;
+    padding:6px 9px; font-size:12.5px;
+  }
+  input[type=text]#bookTitle { width:320px; }
+  .i-preview { background:#14161b; border:1px solid rgba(255,255,255,.07); border-radius:9px; padding:6px 14px; margin-top:8px; }
+  .i-list { max-height:38vh; overflow:auto; }
+  .i-list::-webkit-scrollbar { width:8px; }
+  .i-list::-webkit-scrollbar-thumb { background:#2f3540; border-radius:4px; }
+  .i-row { display:flex; gap:12px; padding:9px 2px; border-bottom:1px solid rgba(255,255,255,.05); }
+  .i-row:last-child { border-bottom:none; }
+  .i-no { font-size:11px; color:#5c6570; padding-top:3px; flex:none; width:22px; }
+  .i-en { font-size:13.5px; color:#e6ebf1; line-height:1.5; }
+  .i-cn { font-size:12.5px; color:#8b93a0; margin-top:3px; line-height:1.5; }
+  .i-note { font-size:11.5px; color:#6b7480; margin-top:8px; line-height:1.6; }
+  .i-warn { color:#f0b357; }
+  .i-err { color:#ff7b8a; font-size:13px; padding:12px 4px; line-height:1.6; }
+  .i-stats { display:flex; gap:18px; margin:2px 0 4px; font-size:12.5px; color:#aeb6c0; flex-wrap:wrap; }
+  .i-stats b { color:#7fb1ff; }
+
+  /* 练习 */
+  #tab-practice.active { display:flex; flex-direction:column; height:100%; }
+  .p-bar { flex:none; display:flex; align-items:center; gap:14px 18px; flex-wrap:wrap; padding-bottom:12px; }
+  .p-book { display:flex; align-items:center; gap:9px; font-size:13px; color:#c8cfd8; }
+  .p-book select { max-width:230px; }
+  #pMeta { font-size:12px; color:#7b8492; }
+  .p-ctrl { display:flex; gap:8px; }
+  .p-chips { display:flex; flex-wrap:wrap; gap:14px; font-size:12.5px; color:#aeb6c0; align-items:center; }
+  .chip { display:flex; align-items:center; gap:6px; cursor:pointer; }
+  .p-rate { display:flex; align-items:center; gap:8px; }
+  .p-rate input { width:110px; accent-color:#3b82f6; }
+  .p-rate span { color:#8b93a0; font-size:12px; min-width:44px; }
+  #pPos { font-size:11.5px; color:#6b7480; margin-left:auto; }
+  .p-progressbar { flex:none; height:3px; background:#2a2f37; border-radius:2px; overflow:hidden; }
+  #pBar { height:100%; background:#4f8cff; width:0%; border-radius:2px; transition:width .3s; }
+
+  .x-list { flex:1; min-height:0; overflow:auto; margin-top:10px; padding-right:4px; }
+  .x-list::-webkit-scrollbar { width:8px; }
+  .x-list::-webkit-scrollbar-thumb { background:rgba(255,255,255,.14); border-radius:4px; }
+  .x-row { display:flex; gap:12px; padding:7px 10px 8px 4px; border-radius:8px; cursor:pointer; }
+  .x-row:hover { background:#21252d; }
+  .x-row.cur { background:#1d2734; box-shadow:inset 2px 0 0 #4f8cff; }
+  .x-row.cur .x-en { color:#fff; }
+  .x-no { flex:none; width:34px; text-align:right; font-size:11px; font-weight:400; color:#5c6570; padding-top:4px; }
+  .x-en { font-size:15px; color:#fff; line-height:1.5; }
+  .x-cn { font-size:12.5px; color:#b6bfc9; line-height:1.55; margin-top:3px; }
+  .x-list.nocn .x-cn { display:none; }
+  .x-list.mask .x-en { color:transparent; text-shadow:0 0 9px #c3ccd6; }
+  .x-list.mask .x-row.reveal .x-en { color:#fff; text-shadow:none; }
+  .x-empty { font-size:13px; color:#6b7480; padding:30px 4px; }
+  .x-page { flex:none; display:flex; align-items:center; gap:10px; padding-top:10px; font-size:12px; color:#8b93a0; }
+  .x-page button[disabled] { opacity:.4; cursor:default; }
+  .x-page button[disabled]:hover { border-color:rgba(255,255,255,.1); }
+  #pPageInfo { min-width:110px; text-align:center; color:#c8cfd8; }
+  .x-psize { margin-left:auto; display:flex; align-items:center; gap:7px; }
+  .x-psize select { padding:4px 6px; font-size:12px; }
+
+  /* 设置 */
+  .s-grid { display:grid; grid-template-columns:1fr 1fr; gap:0 40px; }
+  .s-group { margin-bottom:20px; }
+  .s-group h4 { font-size:13px; color:#e6ebf1; margin-bottom:10px; border-left:3px solid #4f8cff; padding-left:8px; }
+  .s-row { display:flex; align-items:center; gap:10px; margin-bottom:10px; font-size:12.5px; color:#aeb6c0; }
+  .s-row label.main { min-width:96px; }
+  .s-row input[type=range] { flex:1; accent-color:#3b82f6; }
+  .s-row .val { min-width:44px; color:#c8cfd8; font-size:12px; }
+  .s-row select { flex:1; }
+  .s-row input[type=color] {
+    width:46px; height:26px; padding:2px; cursor:pointer; flex:none;
+    background:#242830; border:1px solid rgba(255,255,255,.1); border-radius:6px;
+  }
+  .s-row input[type=color]::-webkit-color-swatch-wrapper { padding:0; }
+  .s-row input[type=color]::-webkit-color-swatch { border:none; border-radius:4px; }
+  #sFontColorVal { margin-left:auto; }
+  .chk { display:flex; align-items:center; gap:7px; cursor:pointer; }
+  .hotkey-input { width:150px; text-align:center; cursor:pointer; }
+  .hk-hint { font-size:11px; color:#6b7480; margin-top:4px; }
+
+  /* toast */
+  #toast {
+    position:fixed; bottom:26px; left:50%; transform:translateX(-50%); z-index:90;
+    background:rgba(18,21,26,.95); border:1px solid rgba(255,255,255,.14);
+    color:#e6ebf1; font-size:13px; padding:9px 18px; border-radius:8px;
+    opacity:0; pointer-events:none; transition:opacity .3s;
+  }
+  #toast.show { opacity:1; }
+</style>
+</head>
+<body>
+
+<div class="m-tabs">
+  <button data-tab="lib" class="active">我的资料库</button>
+  <button data-tab="import">导入文章</button>
+  <button data-tab="practice">练习</button>
+  <button data-tab="settings">设置</button>
+</div>
+
+<div class="m-body">
+
+  <!-- 资料库 -->
+  <section id="tab-lib" class="tab active">
+    <div class="lib-head">
+      <h3>我的资料库</h3>
+      <button class="btn primary" id="libImport">＋ 导入文章</button>
+    </div>
+    <div class="lib-grid" id="libGrid"></div>
+  </section>
+
+  <!-- 导入 -->
+  <section id="tab-import" class="tab">
+    <div class="i-step">
+      <b class="i-cap">① 选择文本文件（支持 UTF-8 / GBK / UTF-16）</b>
+      <div class="i-btns">
+        <button id="pickTxt"><span class="em">📄</span>中英对照 TXT 文件</button>
+      </div>
+      <div class="i-file-name" id="fileName"></div>
+    </div>
+
+    <div class="i-step i-row2">
+      <div class="i-radios">
+        <b class="i-cap">② 中英对齐方式</b>
+        <label><input type="radio" name="align" value="auto" checked><span>自动识别（推荐，识别不了再手动选）</span></label>
+        <label><input type="radio" name="align" value="A"><span>A · 逐段交替（一段英文一段中文）</span></label>
+        <label><input type="radio" name="align" value="D"><span>D · 仅英文（纯英文文件，卡片不带中文）</span></label>
+      </div>
+      <div class="unit-sel">
+        <b class="i-cap">③ 练习单位</b>
+        <label><input type="radio" name="unit" value="sentence" checked><span>单句（一句一张卡）</span></label>
+        <label><input type="radio" name="unit" value="smart"><span>智能合并（短句合并，≤30 词一张）</span></label>
+        <label><input type="radio" name="unit" value="paragraph"><span>整段（一段一张卡，对齐最稳）</span></label>
+      </div>
+    </div>
+
+    <div class="i-step">
+      <b class="i-cap">④ 书名</b>
+      <input type="text" id="bookTitle" placeholder="导入后显示在资料库里的名字">
+    </div>
+
+    <div class="i-step">
+      <b class="i-cap">⑤ 预览确认</b>
+      <button class="btn primary" id="btnPreview">生成预览</button>
+      <div id="previewArea"></div>
+    </div>
+  </section>
+
+  <!-- 练习 -->
+  <section id="tab-practice" class="tab">
+    <div class="p-bar">
+      <div class="p-book">📘
+        <select id="practiceBook"></select>
+        <span id="pMeta"></span>
+      </div>
+      <div class="p-ctrl">
+        <button class="btn" id="pPrev">⏮ 上一句</button>
+        <button class="btn primary" id="pPlay">▶ 播放</button>
+        <button class="btn" id="pNext">下一句 ⏭</button>
+      </div>
+      <div class="p-chips">
+        <label class="chip"><input type="checkbox" id="pCnChk" checked> 显示中文</label>
+        <label class="chip"><input type="checkbox" id="pMaskChk"> 遮住英文（回忆测试）</label>
+        <label class="chip"><input type="checkbox" id="pLoopChk"> 单句循环</label>
+        <label class="chip"><input type="checkbox" id="pShuffleChk"> 随机顺序</label>
+        <span class="p-rate">语速 <input type="range" id="pRate" min="0.5" max="1.5" step="0.05" value="0.95"><span id="rateVal">0.95x</span></span>
+      </div>
+      <span id="pPos"></span>
+    </div>
+    <div class="p-progressbar"><div id="pBar"></div></div>
+    <div class="x-list" id="pList"></div>
+    <div class="x-page">
+      <button class="btn mini" id="pPagePrev">‹ 上一页</button>
+      <span id="pPageInfo"></span>
+      <button class="btn mini" id="pPageNext">下一页 ›</button>
+      <span class="x-psize">每页
+        <select id="pPageSize">
+          <option value="20">20 句</option>
+          <option value="50">50 句</option>
+          <option value="100">100 句</option>
+        </select>
+      </span>
+    </div>
+  </section>
+
+  <!-- 设置 -->
+  <section id="tab-settings" class="tab">
+    <div class="s-grid">
+      <div>
+        <div class="s-group">
+          <h4>悬浮窗外观</h4>
+          <div class="s-row"><label class="main">伪装模式</label>
+            <select id="sMode"><option value="card">通知卡片</option><option value="text">纯文字</option><option value="sub">字幕条</option></select>
+          </div>
+          <div class="s-row"><label class="main">不透明度</label><input type="range" id="sOpacity" min="15" max="100"><span class="val" id="sOpacityVal"></span></div>
+          <div class="s-row"><label class="main">字号</label><input type="range" id="sFont" min="11" max="22"><span class="val" id="sFontVal"></span></div>
+          <div class="s-row"><label class="main">字体颜色</label><input type="color" id="sFontColor"><span class="val" id="sFontColorVal"></span></div>
+          <div class="s-row"><label class="main">最大宽度</label><input type="range" id="sMaxW" min="260" max="900" step="10"><span class="val" id="sMaxWVal"></span></div>
+          <div class="s-row"><label class="main">窗口尺寸</label>
+            <select id="sSizeMode"><option value="auto">按句子长度自适应</option><option value="manual">固定（拖右下角手柄）</option></select>
+          </div>
+          <div class="s-row"><label class="main">中文翻译</label>
+            <select id="sCnMode"><option value="always">总是显示</option><option value="hover">悬停显示</option><option value="off">隐藏</option></select>
+          </div>
+          <div class="s-row"><label class="main">移开变淡</label>
+            <label class="chk"><input type="checkbox" id="sAutoFade"> 鼠标移开 3 秒后自动变淡</label>
+          </div>
+        </div>
+
+        <div class="s-group">
+          <h4>资料库窗口</h4>
+          <div class="s-row"><label class="main">不透明度</label><input type="range" id="sMgrOpacity" min="35" max="100"><span class="val" id="sMgrOpacityVal"></span></div>
+        </div>
+
+        <div class="s-group">
+          <h4>播放</h4>
+          <div class="s-row"><label class="main">自动播放</label>
+            <label class="chk"><input type="checkbox" id="sAutoplay"> 读完自动切下一句</label>
+          </div>
+          <div class="s-row"><label class="main">切换间隔</label><input type="number" id="sInterval" min="3" max="60" style="width:70px"> 秒</div>
+          <div class="s-row"><label class="main">单句循环</label><label class="chk"><input type="checkbox" id="sLoop"> 循环朗读当前句</label></div>
+          <div class="s-row"><label class="main">随机顺序</label><label class="chk"><input type="checkbox" id="sShuffle"> 随机抽句</label></div>
+        </div>
+      </div>
+
+      <div>
+        <div class="s-group">
+          <h4>语音</h4>
+          <div class="s-row"><label class="main">神经语音</label><label class="chk"><input type="checkbox" id="sEdgeTts"> 用云端神经语音（首次朗读需联网，之后走本地缓存）</label></div>
+          <div class="s-row"><label class="main">英文音色</label><select id="sVoicePreset"></select><button class="btn mini" id="sVoiceTry" type="button">试听</button></div>
+          <div class="s-row"><label class="main">语音缓存</label><span class="val" id="sCacheVal">—</span><button class="btn mini" id="sCacheClear" type="button">清理</button></div>
+          <div class="s-row"><label class="main">朗读中文</label><label class="chk"><input type="checkbox" id="sReadCn"> 英文读完再读一遍中文</label></div>
+          <div class="s-row"><label class="main">语速</label><input type="range" id="sRate" min="0.5" max="1.5" step="0.05"><span class="val" id="sRateVal"></span></div>
+        </div>
+
+        <div class="s-group">
+          <h4>查词</h4>
+          <p class="hk-hint">点悬浮窗里的英文单词即可看中文释义，查过的词自动缓存在本地，之后点同一个词是秒出。</p>
+          <div class="s-row"><label class="main">词典缓存</label><span class="val" id="sDictVal">—</span><button class="btn mini" id="sDictClear" type="button">清除</button></div>
+        </div>
+
+        <div class="s-group">
+          <h4>全局快捷键（任何软件里都生效）</h4>
+          <div class="s-row"><label class="main">显示 / 隐藏</label><input type="text" class="hotkey-input" id="hkToggle" readonly></div>
+          <div class="s-row"><label class="main">上一句</label><input type="text" class="hotkey-input" id="hkPrev" readonly></div>
+          <div class="s-row"><label class="main">下一句</label><input type="text" class="hotkey-input" id="hkNext" readonly></div>
+          <div class="s-row"><label class="main">播放 / 暂停</label><input type="text" class="hotkey-input" id="hkPlay" readonly></div>
+          <p class="hk-hint">点击输入框后直接按组合键（需带 Alt 或 Ctrl，比如 Alt+H）。注意：注册后这些组合键会被本程序占用。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<div id="toast"></div>
+<script src="manager.js"></script>
+</body>
+</html>

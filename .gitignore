@@ -1,0 +1,36 @@
+# ---------- 依赖与构建产物 ----------
+# src-tauri/target 是 cargo 产物（本机已 12 GB），绝对不能进仓库
+node_modules/
+src-tauri/target/
+
+# ---------- 前端生成物 ----------
+# web/ 由 tools/sync-web.js 从 src/ 拷贝而来，是 tauri.conf.json 的 frontendDist。
+# 不提交：npm run dev / npm run pack 都会先跑一遍 sync，改了 src/ 直接跑就行。
+# 注意：全新 clone 后要绕过 npm 直接 `cargo build` 的话，得先 `npm run web`。
+web/
+
+# ---------- 打包产物 ----------
+dist/
+
+# ---------- 运行时数据 ----------
+# 导入的书、个人配置、语音与词典缓存、日志，全部是本机状态，不进仓库
+data/
+
+# ---------- 本地工作记录 ----------
+# AI 会话记忆与项目日志。开私有仓库想跨机同步的话，删掉下面这一行
+.workbuddy/
+
+# ---------- 设计原型与临时素材 ----------
+# design/ 放不参与构建的设计资料，整目录不进仓库：
+#   design/mockup.html        最初的外观原型（已停止维护，含砍掉的按钮）
+#   design/mockup-dict.html   查词卡原型（功能已落地到 src/widget/）
+#   design/voice-samples/     早期 TTS 音色试听样本
+# 这些只是演进过程留档，看真实界面请 `npm run dev`（代码在 src/）。
+design/
+
+# ---------- 编辑器 / 系统 ----------
+.vscode/
+.idea/
+Thumbs.db
+desktop.ini
+*.log
